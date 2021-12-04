@@ -110,7 +110,7 @@ Route::post('/login_with_facebook',function(){
    
     if($user->count()>0){
        return [
-           "user"=>$user,
+           "user"=>$user[0],
            "msg"=>"found"
        ];
     }else{
@@ -333,7 +333,13 @@ Route::get('/get_saved_events',function(){
 Route::get('/view_event',function(){
 $event_id = request('event_id');
 $user_id = request('user_id');
+$event;
+if($user_id){
 $event = DB::select("SELECT *,(select count(*) from going_events where selected_going_event_user_id=$user_id AND selected_going_event_id=$event_id) as is_going,(select count(*) from saved_events where selected_saved_event_user_id=$user_id AND selected_saved_event_id=$event_id) as is_saved FROM events WHERE event_id=$event_id");
+
+}else{
+    $event = DB::select("SELECT * FROM events WHERE event_id=$event_id");
+}
 return [
     "event"=>$event[0]
 ];
